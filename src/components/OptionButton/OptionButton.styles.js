@@ -1,10 +1,5 @@
-import { makeStyles } from "@material-ui/core"
-
-export const useStyles = makeStyles({
+export const styles = theme => ({
   button: {
     color: 'grey',
   },
-  red: {
-    color: 'red !important',
-  }
 });

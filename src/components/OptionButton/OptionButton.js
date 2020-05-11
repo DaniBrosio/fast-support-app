@@ -1,49 +1,62 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react'
 import {
   IconButton,
   Tooltip,
+  withStyles,
 } from '@material-ui/core';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import classNames from 'classnames';
 import { options } from '../../enums/options';
-import { useStyles } from './OptionButton.styles';
+import { styles } from './OptionButton.styles';
 
-export default function OptionButton(props) {
-  const { option, template } = props;
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    setCopied(true);
+class OptionButton extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      copied: false,
+      text: props.template.content || ''
+    };
   }
 
-
-  return (
-    option === options.copy
-      ?
-      <CopyToClipboard text={template.content} onCopy={handleCopy}>
-        <RegularButton copied={copied} option={option} template={template} />
-      </CopyToClipboard>
-      :
-      <RegularButton option={option} template={template} />
-  )
-}
-
-function RegularButton (props) {
-  const { option, copied, template } = props;
-  const classes = useStyles();
-  
-  const handleOption = (op,template) => {
+  handleOption = (op, template) => {
     if (typeof op.callback === 'function') {
       op.callback(template);
     }
   }
 
-  return (
-    <Tooltip title={option.label}>
-      <IconButton
-        className={copied ? classes.red :  classes.button}
-        onClick={()=>handleOption(option,template)}>
-        {option.icon}
-      </IconButton>
-    </Tooltip>
-  )
+  handleCopy = (text, result) => {
+    console.log({ text, result })
+    this.setState({copied: result}, ()=>{
+      console.log(this.state);
+    });
+  }
+
+  render() {
+    const { classes, option, template } = this.props;
+    const { copied } = this.state;
+  
+    return (
+      option === options.copy
+        ?
+        <Tooltip title={copied ? 'Copied!' : option.label} open={copied} placement='top-end'>
+          <CopyToClipboard text={template.content} onCopy={this.handleCopy}>
+            <IconButton
+              className={classNames(classes.button)}
+              onClick={() => this.handleOption(option, template)}>
+              {option.icon}
+            </IconButton>
+          </CopyToClipboard>
+        </Tooltip>
+        :
+        <Tooltip title={option.label}>
+          <IconButton
+            className={classes.button}
+            onClick={() => this.handleOption(option, template)}>
+            {option.icon}
+          </IconButton>
+        </Tooltip>
+    )
+  }
 }
+
+export default withStyles(styles)(OptionButton);
