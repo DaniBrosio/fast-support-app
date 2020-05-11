@@ -7,13 +7,14 @@ import Layout, {
   getSidebarTrigger,
   getSidebarContent,
   getCollapseBtn,
-  // getContent,
+  getContent,
   // getFooter,
 } from "@mui-treasury/layout";
 import Toolbar from "@material-ui/core/Toolbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import Routes from './routes/Routes';
+import Routes from './routes';
+import ThemeProvider from './providers/ThemeProvider';
 
 const scheme = Layout();
 
@@ -29,15 +30,19 @@ scheme.configureHeader(builder => {
 
 scheme.configureEdgeSidebar(builder => {
   builder
-    .create('main-sidebar', { anchor: 'left' })
+    .create('main_sidebar', { anchor: 'left' })
     .registerTemporaryConfig('xs', {
       anchor: 'left',
-      width: 'auto', // 'auto' is only valid for temporary variant
+      width: 'auto',
     })
     .registerPermanentConfig('md', {
-      width: 256, // px, (%, rem, em is compatible)
+      width: 256,
       collapsible: true,
       collapsedWidth: 64,
+      persistentBehavior: {
+        main_sidebar: 'fit',
+        _others: 'none',
+      },
     });
 });
 
@@ -47,25 +52,30 @@ const SidebarTrigger = getSidebarTrigger(styled);
 
 const SidebarContent = getSidebarContent(styled);
 const CollapseBtn = getCollapseBtn(styled);
+const Content = getContent(styled);
 
 const App = () => {
   return (
-    <Root scheme={scheme}>
-      <CssBaseline />
-      <Header>
-        <Toolbar>
-          <SidebarTrigger sidebarId="main-sidebar"/>
-          Header
-        </Toolbar>
-      </Header>
-      <DrawerSidebar sidebarId={'main-sidebar'}>
-        <SidebarContent>
-          SidebarContent
-        </SidebarContent>
-        <CollapseBtn />
-      </DrawerSidebar>
-      <Routes/>
-    </Root>
+    <ThemeProvider>
+      <Root scheme={scheme}>
+        <CssBaseline />
+        <Header>
+          <Toolbar>
+            <SidebarTrigger sidebarId="main_sidebar"/>
+            Header
+          </Toolbar>
+        </Header>
+        <DrawerSidebar sidebarId="main_sidebar">
+          <SidebarContent>
+            SidebarContent
+          </SidebarContent>
+          <CollapseBtn />
+        </DrawerSidebar>
+        <Content>
+          <Routes/>
+        </Content>
+      </Root>
+    </ThemeProvider>
   );
 };
 
